@@ -1,48 +1,44 @@
 package com.litmus7.employeemanager.util;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
+import com.litmus7.employeemanager.constant.MessageConstants;
 import com.litmus7.employeemanager.dto.Employee;
-import com.litmus7.employeemanager.dto.Response;
+import com.litmus7.employeemanager.exception.EmployeeValidationException;
+import com.litmus7.employeemanager.exception.InvalidFileFormatException;
 
 public class ValidationUtil {
 
 	public static boolean isValidIdFormat(String id) {
-		int eid;
-		// change the reading to call later if needed.
-//		List<Employee> employees = EmployeeController.readEmployeesCSV(EmployeeManagerApp.CSV_FILE_NAME);
+		int employeeId;
 		try {
-			eid = Integer.parseInt(id);
+			employeeId = Integer.parseInt(id);
 		} catch (NumberFormatException e) {
 			return false;
 		}
-		if (eid > 0) {
-//			for (Employee emp : employees)
-//				if (eid == emp.getId())
-//					return false;
+		if (employeeId > 0) {
 			return true;
 		}
 		return false;
 	}
 
-	public static boolean isUniqueIdInEmployeeList(String id, List<Employee> employeeList) {
-		if (ValidationUtil.isValidIdFormat(id)) {
-			if (employeeList != null) {
-				for (Employee employee : employeeList)
-					if (employee.getId() == Integer.parseInt(id))
-						return false;
-				return true;
-			}
+	public static boolean isUniqueIdInEmployeeList(int id, List<Employee> employees) {
+		if (employees != null) {
+			for (Employee employee : employees)
+				if (employee.getId() == id)
+					return false;
+			return true;
 		}
-		return false;
+		return true;
 	}
 
 	public static boolean isValidName(String name) {
-		return (name != null) && (!name.trim().isEmpty());
+		return (name != null) && (!name.trim().isEmpty()) && (name.matches("[a-zA-Z\\s'-]+"));
 	}
 
 	public static boolean isValidEmail(String email) {
@@ -79,79 +75,71 @@ public class ValidationUtil {
 		return status.equals("true") || status.equals("false");
 	}
 
-	public static Response<Boolean> isValidEmployee(String id, String firstName, String lastName, String email,
-			String mobileNumber, String joiningDate, String status) {
-		Response<Boolean> response = new Response<Boolean>(true, null, "");
-		if (!ValidationUtil.isValidIdFormat(id)) {
-		    response.setMessage(response.getMessage() + "Invalid ID entered\n");
-		    response.setSuccess(false);
-		}
+	public static boolean isValidEmployee(Employee employee) throws EmployeeValidationException {
 
-		if (!ValidationUtil.isValidName(firstName)) {
-		    response.setMessage(response.getMessage() + "Invalid First Name entered\n");
-		    response.setSuccess(false);
-		}
+	    StringBuilder errorMessage = new StringBuilder();
 
-		if (!ValidationUtil.isValidName(lastName)) {
-		    response.setMessage(response.getMessage() + "Invalid Last Name entered\n");
-		    response.setSuccess(false);
-		}
+	    if (!ValidationUtil.isValidIdFormat(String.valueOf(employee.getId()))) {
+	        errorMessage.append(MessageConstants.INVALID_ID_MESSAGE);
+	    }
 
-		if (!ValidationUtil.isValidEmail(email)) {
-		    response.setMessage(response.getMessage() + "Invalid Email entered\n");
-		    response.setSuccess(false);
-		}
+	    if (!ValidationUtil.isValidName(employee.getFirstName())) {
+	        errorMessage.append(MessageConstants.INVALID_FIRST_NAME_MESSAGE);
+	    }
 
-		if (!ValidationUtil.isValidMobileNumber(mobileNumber)) {
-		    response.setMessage(response.getMessage() + "Invalid Mobile Number entered\n");
-		    response.setSuccess(false);
-		}
+	    if (!ValidationUtil.isValidName(employee.getLastName())) {
+	        errorMessage.append(MessageConstants.INVALID_LAST_NAME_MESSAGE);
+	    }
 
-		if (!ValidationUtil.isValidJoiningDate(joiningDate)) {
-		    response.setMessage(response.getMessage() + "Invalid Joining Date entered (must be YYYY-MM-DD and not a future date)\n");
-		    response.setSuccess(false);
-		}
+	    if (!ValidationUtil.isValidEmail(employee.getEmail())) {
+	        errorMessage.append(MessageConstants.INVALID_EMAIL_MESSAGE);
+	    }
 
-		if (!ValidationUtil.isValidStatus(status)) {
-		    response.setMessage(response.getMessage() + "Invalid Active Status entered (must be true or false)\n");
-		    response.setSuccess(false);
-		}
-		
-		return response;
-		
+	    if (!ValidationUtil.isValidMobileNumber(employee.getMobileNumber())) {
+	        errorMessage.append(MessageConstants.INVALID_MOBILE_NUMBER_MESSAGE);
+	    }
+
+	    if (!ValidationUtil.isValidJoiningDate(employee.getJoiningDate().toString())) {
+	        errorMessage.append(MessageConstants.INVALID_JOINING_DATE_MESSAGE);
+	    }
+
+	    if (!ValidationUtil.isValidStatus(String.valueOf(employee.getStatus()))) {
+	        errorMessage.append(MessageConstants.INVALID_ACTIVE_STATUS_MESSAGE);
+	    }
+
+	    if (errorMessage.length() > 0) {
+	        throw new EmployeeValidationException(errorMessage.toString());
+	    }
+
+	    return true;
 	}
 
-//	public static boolean isValidFile(String fileName, String expectedExtension) {
-//		if (fileName == null || fileName.trim().isEmpty())
-//			return false;
-//		
-//		 if (!fileName.toLowerCase().endsWith(expectedExtension.toLowerCase()))
-//		        return false;
-//		 
-//		File file = new File(fileName.trim());
-//		return file.exists() && file.isFile();
-//	}
+
+	public static boolean isValidFile(String fileName) throws FileNotFoundException, IllegalArgumentException, InvalidFileFormatException {
+		
+		if (fileName == null || fileName.trim().isEmpty()) {
+		    throw new IllegalArgumentException(MessageConstants.EMPTY_FILE_NAME_MESSAGE);
+		}
+
+		File file = new File(fileName.trim());
+		if (!file.exists() || !file.isFile()) {
+		    throw new FileNotFoundException(MessageConstants.FILE_NOT_FOUND_MESSAGE);
+		}
+		
+		return true;
+	}
 	
-	public static Response<Boolean> isValidFile(String fileName, String expectedExtension) {
-	    Response<Boolean> response = new Response<>(false, null, "");
-
-	    if (fileName == null || fileName.trim().isEmpty()) {
-	        response.setMessage("Empty filename.\n");
-	        return response;
+	public static boolean isCorrectFileFormat(String fileName, String expectedExtension) throws IllegalArgumentException, InvalidFileFormatException {
+		
+		if (fileName == null || expectedExtension == null) {
+	        throw new IllegalArgumentException(MessageConstants.EMPTY_FILE_NAME_OR_EXTENSION_MESSAGE);
 	    }
-
-	    File file = new File(fileName.trim());
-	    if (!file.exists() || !file.isFile()) {
-	        response.setMessage(fileName + " does not exist.\n");
-	        return response;
-	    }
-	    
-	    if (!fileName.toLowerCase().endsWith(expectedExtension.toLowerCase())) {
-	        response.setMessage("Invalid file format.\n");
-	        return response;
-	    }
-	    
-	    response.setSuccess(true);
-	    return response;
+		
+		if (!fileName.toLowerCase().endsWith(expectedExtension.toLowerCase())) {
+		    throw new InvalidFileFormatException(MessageConstants.INVALID_FILE_FORMAT_MESSAGE);
+		}
+		
+		return true;
 	}
+	
 }

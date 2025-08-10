@@ -11,25 +11,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import com.litmus7.employeemanager.constant.MessageConstants;
 import com.litmus7.employeemanager.dto.Employee;
-import com.litmus7.employeemanager.dto.Response;
+import com.litmus7.employeemanager.exception.EmployeeValidationException;
 
 public class TextFileUtil {
 
-	public static Response<List<Employee>> readEmployeeDataFromTxtFile(String inputFileName, String delimiter) {
+	public static List<Employee> readEmployeeDataFromTxtFile(String inputFileName, String delimiter) throws FileNotFoundException, IOException {
 
-		Response<List<Employee>> response = new Response<List<Employee>>(false, null, "");
-		List<Employee> employeeList = new ArrayList<>();
-		BufferedReader br = null;
-
-		try {
-			br = new BufferedReader(new FileReader(inputFileName));
+		List<Employee> employees = new ArrayList<>();
+		
+		try (BufferedReader br = new BufferedReader(new FileReader(inputFileName))) {
 
 			int corruptedRowCount = 0;
 			String id, emp, firstName, lastName, mobileNumber, email, joiningDate, status;
 //			LocalDate joiningDate;
 //			boolean status;
-
+			Employee employee;
 			while ((emp = br.readLine()) != null) {
 
 				StringTokenizer employeeTokens = new StringTokenizer(emp, delimiter);
@@ -45,66 +43,50 @@ public class TextFileUtil {
 				email = employeeTokens.nextToken();
 				joiningDate = employeeTokens.nextToken();
 				status = employeeTokens.nextToken();
-
-				Response<Boolean> validationResponse = ValidationUtil.isValidEmployee(id, firstName, lastName, email, mobileNumber, joiningDate, status);
-				if (validationResponse.isSuccess()) {
-					Employee employee = new Employee(Integer.parseInt(id), firstName, lastName, email, mobileNumber,
-							LocalDate.parse(joiningDate), Boolean.parseBoolean(status));
-
-					employeeList.add(employee);
-				} else
-					corruptedRowCount++;
-			}
-			response.setSuccess(true);
-			response.setData(employeeList);
-			response.setMessage("Employee details fetched from " + inputFileName + " successfully.\n");
-			if (corruptedRowCount > 0)
-				response.setMessage(response.getMessage() + corruptedRowCount + " corrupted rows were skipped");
-		} catch (FileNotFoundException e) {
-			response.setMessage(inputFileName + "File not found");
-		} catch (IOException e) {
-			response.setMessage("Input error: Unable to read from input stream.");
-		} finally {
-			if (br != null)
+				
 				try {
-					br.close();
-				} catch (IOException e) {
-					response.setMessage(response.getMessage() + "\nWARNING : Error occured while closing the file");
+					employee = new Employee(Integer.parseInt(id), firstName, lastName, email, mobileNumber,
+							LocalDate.parse(joiningDate), Boolean.parseBoolean(status));
+				} catch (Exception e) {
+					corruptedRowCount++;
+					continue;
 				}
-		}
+				
+				try {
+					if (ValidationUtil.isValidEmployee(employee)) {
+						employees.add(employee);
+					} else
+						corruptedRowCount++;
+				} catch (EmployeeValidationException e) {
+					corruptedRowCount++;
+				}
+			}
+			
+			if (corruptedRowCount > 0);
+				
+		} 
 
-		return response;
+		return employees;
 
 	}
 
-	public static Response<Boolean> writeEmployeeDataToCsv(String outputFilename, List<Employee> employeeList) {
-		PrintWriter pw = null;
-		Response<Boolean> response = new Response<Boolean>(false, null, "");
-
-		if (employeeList == null || employeeList.isEmpty()) {
-			response.setMessage("No employee data to write.");
-			return response;
+	public static boolean writeEmployeeDataToCsv(String outputFilename, List<Employee> employees) throws IOException {
+		
+		if (employees == null || employees.isEmpty()) {
+			throw new IllegalArgumentException(MessageConstants.EMPTY_EMPLOYEE_LIST_MESSAGE);
 		}
 
 		String employeeCSV;
-		try {
-			pw = new PrintWriter(new FileWriter(outputFilename, true));
-			for (Employee employee : employeeList) {
+		try (PrintWriter pw = new PrintWriter(new FileWriter(outputFilename, true))) {
+			for (Employee employee : employees) {
 				employeeCSV = String.format("%d,%s,%s,%s,%s,%s,%b", employee.getId(), employee.getFirstName(),
 						employee.getLastName(), employee.getMobileNumber(), employee.getEmail(),
 						employee.getJoiningDate(), employee.getStatus());
 //				System.out.println(employeeCSV);
 				pw.println(employeeCSV);
 			}
-			response.setSuccess(true);
-			response.setMessage("Employee details written to " + outputFilename + " successfully");
-		} catch (IOException e) {
-			response.setMessage("Failed to write employee data to " + outputFilename);
-		} finally {
-			if (pw != null)
-				pw.close();
-		}
-		return response;
-
+			return true;
+		} 
+		
 	}
 }
