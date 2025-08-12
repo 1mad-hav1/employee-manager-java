@@ -27,7 +27,7 @@ public class ValidationUtil {
 		return false;
 	}
 
-	public static boolean isUniqueIdInEmployeeList(int id, List<Employee> employees) {
+	public static boolean isUniqueId(int id, List<Employee> employees) {
 		if (employees != null) {
 			for (Employee employee : employees)
 				if (employee.getId() == id)
@@ -47,14 +47,34 @@ public class ValidationUtil {
 		String emailRE = "^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+$";
 		return email.matches(emailRE);
 	}
-
+	
+	public static boolean isUniqueEmail(String email, List<Employee> employees) {
+		if (employees != null) {
+			for (Employee employee : employees)
+				if (employee.getEmail().equals(email))
+					return false;
+			return true;
+		}
+		return true;
+	}
+	
 	public static boolean isValidMobileNumber(String mobileNumber) {
 		if (mobileNumber == null || mobileNumber.trim().isEmpty())
 			return false;
 		String mobileNumRE = "^[0-9]{10}$";
 		return mobileNumber.matches(mobileNumRE);
 	}
-
+	
+	public static boolean isUniqueMobileNumber(String mobileNumber, List<Employee> employees) {
+		if (employees != null) {
+			for (Employee employee : employees)
+				if (employee.getMobileNumber().equals(mobileNumber))
+					return false;
+			return true;
+		}
+		return true;
+	}
+	
 	public static boolean isValidJoiningDate(String joiningDate) {
 		if (joiningDate == null || joiningDate.trim().isEmpty())
 			return false;

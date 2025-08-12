@@ -3,7 +3,8 @@ package com.litmus7.employeemanager.controller;
 import com.litmus7.employeemanager.constant.MessageConstants;
 import com.litmus7.employeemanager.dto.Employee;
 import com.litmus7.employeemanager.dto.Response;
-import com.litmus7.employeemanager.exception.BusinessValidationException;
+import com.litmus7.employeemanager.exception.EmployeeNotFoundException;
+import com.litmus7.employeemanager.exception.EmployeeServiceException;
 import com.litmus7.employeemanager.exception.EmployeeValidationException;
 import com.litmus7.employeemanager.exception.InvalidFileFormatException;
 import com.litmus7.employeemanager.service.EmployeeService;
@@ -12,7 +13,6 @@ import com.litmus7.employeemanager.util.ValidationUtil;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +51,8 @@ public class EmployeeController {
 		try {
 			if (ValidationUtil.isValidFile(inputFileName) && ValidationUtil.isCorrectFileFormat(inputFileName, ".txt")
 					&& ValidationUtil.isCorrectFileFormat(outputFileName, ".csv")) {
-				Response<List<Employee>> readResponse = employeeController.readEmployeeDataFromFile(inputFileName, ".txt", "$");
+				Response<List<Employee>> readResponse = employeeController.readEmployeeDataFromFile(inputFileName,
+						".txt", "$");
 				if (!readResponse.isSuccess()) {
 					response.setMessage(readResponse.getMessage());
 					return response;
@@ -77,11 +78,12 @@ public class EmployeeController {
 		Response<Boolean> response = new Response<Boolean>(false, null, "");
 
 		try {
-			if (ValidationUtil.isValidFile(outputFileName) && ValidationUtil.isCorrectFileFormat(outputFileName, ".csv")) {
+			if (ValidationUtil.isValidFile(outputFileName)
+					&& ValidationUtil.isCorrectFileFormat(outputFileName, ".csv")) {
 
 				if (ValidationUtil.isValidEmployee(employee)) {
 
-					if (!ValidationUtil.isUniqueIdInEmployeeList(employee.getId(),
+					if (!ValidationUtil.isUniqueId(employee.getId(),
 							TextFileUtil.readEmployeeDataFromTxtFile(outputFileName, ","))) {
 						response.setMessage(MessageConstants.EXISTING_ID_MESSAGE);
 						return response;
@@ -90,15 +92,16 @@ public class EmployeeController {
 					List<Employee> employeeAsList = new ArrayList<Employee>();
 					employeeAsList.add(employee);
 
-					if(TextFileUtil.writeEmployeeDataToCsv(outputFileName, employeeAsList)) {
-						
+					if (TextFileUtil.writeEmployeeDataToCsv(outputFileName, employeeAsList)) {
+
 						response.setMessage(MessageConstants.SUCCESS_WRITE_EMPLOYEE_CSV_MESSAGE);
 						response.setSuccess(true);
 					}
 				}
 
 			}
-		} catch (IllegalArgumentException | InvalidFileFormatException | EmployeeValidationException | FileNotFoundException e) {
+		} catch (IllegalArgumentException | InvalidFileFormatException | EmployeeValidationException
+				| FileNotFoundException e) {
 			response.setMessage(e.getMessage());
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
@@ -121,19 +124,20 @@ public class EmployeeController {
 		}
 
 		try {
-			if (employeeService.createEmployee(employee)) {
+			if (ValidationUtil.isValidEmployee(employee)) {
 
-				response.setSuccess(true);
-				response.setMessage(MessageConstants.SUCCESS_CREATE_EMPLOYEE_MESSAGE);
+				if (employeeService.createEmployee(employee)) {
 
-			} else
-				response.setMessage(MessageConstants.ERROR_CREATE_EMPLOYEE_MESSAGE);
-		} catch (SQLException e) {
-			response.setMessage(MessageConstants.ERROR_SQLEXCEPTION_MESSAGE);
-		} catch (BusinessValidationException e) {
-			response.setMessage(e.getMessage());
+					response.setSuccess(true);
+					response.setMessage(MessageConstants.SUCCESS_CREATE_EMPLOYEE_MESSAGE);
+
+				} else
+					response.setMessage(MessageConstants.FAILED_CREATE_EMPLOYEE_MESSAGE);
+			}
 		} catch (EmployeeValidationException e) {
 			response.setMessage(e.getMessage());
+		} catch (EmployeeServiceException e) {
+			response.setMessage(MessageConstants.ERROR_CREATE_EMPLOYEE_PREFIX_MESSAGE + e.getMessage());
 		}
 
 		return response;
@@ -147,16 +151,12 @@ public class EmployeeController {
 		try {
 
 			response.setData(employeeService.getAllEmployees());
+			response.setSuccess(true);
 
-			if (response.getData().isEmpty())
-				response.setMessage(MessageConstants.EMPTY_EMPLOYEES_MESSAGE);
-			else {
-				response.setSuccess(true);
-				response.setMessage(MessageConstants.SUCCESS_FETCH_ALL_EMPLOYEES_MESSAGE);
-			}
-
-		} catch (SQLException e) {
-			response.setMessage(MessageConstants.ERROR_SQLEXCEPTION_MESSAGE);
+		} catch (EmployeeServiceException e) {
+			response.setMessage(MessageConstants.ERROR_FETCH_ALL_EMPLOYEE_PREFIX_MESSAGE + e.getMessage());
+		} catch (EmployeeNotFoundException e) {
+			response.setMessage(e.getMessage());
 		}
 
 		return response;
@@ -167,23 +167,19 @@ public class EmployeeController {
 		Response<Employee> response = new Response<Employee>(false, null, "");
 
 		if (id <= 0) {
-			response.setMessage(MessageConstants.EMPTY_ID_MESSAGE);
+			response.setMessage(MessageConstants.INVALID_ID_MESSAGE);
 			return response;
 		}
 
 		try {
 
 			response.setData(employeeService.getEmployeeById(id));
+			response.setSuccess(true);
 
-			if (response.getData() == null)
-				response.setMessage(MessageConstants.EMPTY_EMPLOYEES_MESSAGE);
-			else {
-				response.setSuccess(true);
-				response.setMessage(MessageConstants.SUCCESS_FETCH_EMPLOYEE_MESSAGE);
-			}
-
-		} catch (SQLException e) {
-			response.setMessage(MessageConstants.ERROR_SQLEXCEPTION_MESSAGE);
+		} catch (EmployeeServiceException e) {
+			response.setMessage(MessageConstants.ERROR_FETCH_EMPLOYEE_BY_ID_PREFIX_MESSAGE + e.getMessage());
+		} catch (EmployeeNotFoundException e) {
+			response.setMessage(e.getMessage());
 		}
 
 		return response;
@@ -194,7 +190,7 @@ public class EmployeeController {
 		Response<Boolean> response = new Response<Boolean>(false, null, "");
 
 		if (id <= 0) {
-			response.setMessage(MessageConstants.EMPTY_ID_MESSAGE);
+			response.setMessage(MessageConstants.INVALID_ID_MESSAGE);
 			return response;
 		}
 
@@ -203,15 +199,11 @@ public class EmployeeController {
 
 				response.setSuccess(true);
 				response.setMessage(MessageConstants.SUCCESS_DELETE_EMPLOYEE_BY_ID_MESSAGE);
-
 			} else
-				response.setMessage(MessageConstants.ERROR_DELETE_EMPLOYEE_BY_ID_MESSAGE);
-		} catch (SQLException e) {
-			response.setMessage(MessageConstants.ERROR_SQLEXCEPTION_MESSAGE);
-		} catch (BusinessValidationException e) {
-			response.setMessage(e.getMessage());
+				response.setMessage(MessageConstants.FAILED_DELETE_EMPLOYEE_MESSAGE);
+		} catch (EmployeeServiceException e) {
+			response.setMessage(MessageConstants.ERROR_DELETE_EMPLOYEE_PREFIX_MESSAGE + e.getMessage());
 		}
-
 		return response;
 	}
 
@@ -225,19 +217,20 @@ public class EmployeeController {
 		}
 
 		try {
-			if (employeeService.updateEmployee(employee)) {
+			if (ValidationUtil.isValidEmployee(employee)) {
 
-				response.setSuccess(true);
-				response.setMessage(MessageConstants.SUCCESS_UPDATE_EMPLOYEE_MESSAGE);
+				if (employeeService.updateEmployee(employee)) {
 
-			} else
-				response.setMessage(MessageConstants.ERROR_UPDATE_EMPLOYEE_MESSAGE);
-		} catch (SQLException e) {
-			response.setMessage(MessageConstants.ERROR_SQLEXCEPTION_MESSAGE);
-		} catch (BusinessValidationException e) {
-			response.setMessage(e.getMessage());
+					response.setSuccess(true);
+					response.setMessage(MessageConstants.SUCCESS_UPDATE_EMPLOYEE_MESSAGE);
+
+				} else
+					response.setMessage(MessageConstants.FAILED_UPDATE_EMPLOYEE_MESSAGE);
+			}
 		} catch (EmployeeValidationException e) {
 			response.setMessage(e.getMessage());
+		} catch (EmployeeServiceException e) {
+			response.setMessage(MessageConstants.ERROR_UPDATE_EMPLOYEE_PREFIX_MESSAGE + e.getMessage());
 		}
 
 		return response;

@@ -9,12 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.litmus7.employeemanager.constant.SqlConstants;
+import com.litmus7.employeemanager.constant.MessageConstants;
 import com.litmus7.employeemanager.dto.Employee;
+import com.litmus7.employeemanager.exception.EmployeeDaoException;
 import com.litmus7.employeemanager.util.DatabaseUtil;
 
 public class EmployeeDAO {
 
-	public boolean createEmployee(Employee employee) throws SQLException {
+	public boolean createEmployee(Employee employee) throws EmployeeDaoException {
 		try (Connection connection = DatabaseUtil.getConnection();
 				PreparedStatement insertStatement = connection.prepareStatement(SqlConstants.INSERT_EMPLOYEE_QUERY)) {
 
@@ -29,10 +31,12 @@ public class EmployeeDAO {
 			int rowsInserted = insertStatement.executeUpdate();
 
 			return rowsInserted > 0;
+		} catch (SQLException e) {
+			throw new EmployeeDaoException(MessageConstants.ERROR_DAO_CREATE_EMPLOYEE_MESSAGE, e);
 		}
 	}
 
-	public List<Employee> getAllEmployee() throws SQLException {
+	public List<Employee> getAllEmployees() throws EmployeeDaoException {
 		List<Employee> employees = new ArrayList<>();
 		try (Connection connection = DatabaseUtil.getConnection();
 				PreparedStatement selectStatement = connection.prepareStatement(SqlConstants.SELECT_EMPLOYEES_QUERY)) {
@@ -51,10 +55,12 @@ public class EmployeeDAO {
 			}
 
 			return employees;
+		} catch (SQLException e) {
+			throw new EmployeeDaoException(MessageConstants.ERROR_DAO_GET_ALL_EMPLOYEE_MESSAGE, e);
 		}
 	}
 
-	public Employee getEmployeeById(int id) throws SQLException {
+	public Employee getEmployeeById(int id) throws EmployeeDaoException {
 		Employee employee = null;
 		try (Connection connection = DatabaseUtil.getConnection();
 			PreparedStatement selectStatement = connection.prepareStatement(SqlConstants.SELECT_EMPLOYEE_BY_ID_QUERY)) {
@@ -73,10 +79,12 @@ public class EmployeeDAO {
 						employeeRs.getBoolean(SqlConstants.ACTIVE_STATUS_COLUMN_NAME));
 			}
 			return employee;
+		} catch (SQLException e) {
+			throw new EmployeeDaoException(MessageConstants.ERROR_DAO_GET_EMPLOYEE_BY_ID_MESSAGE, e);
 		}
 	}
 
-	public boolean deleteEmployee(int id) throws SQLException {
+	public boolean deleteEmployee(int id) throws EmployeeDaoException {
 
 		try (Connection connection = DatabaseUtil.getConnection();
 				PreparedStatement deleteStatement = connection.prepareStatement(SqlConstants.DELETE_EMPLOYEE_BY_ID_QUERY)) {
@@ -85,10 +93,12 @@ public class EmployeeDAO {
 			int rowsDeleted = deleteStatement.executeUpdate();
 
 			return rowsDeleted > 0;
+		}  catch (SQLException e) {
+			throw new EmployeeDaoException(MessageConstants.ERROR_DAO_DELETE_EMPLOYEE_MESSAGE, e);
 		}
 	}
 
-	public boolean updateEmployee(Employee employee) throws SQLException {
+	public boolean updateEmployee(Employee employee) throws EmployeeDaoException {
 		try (Connection connection = DatabaseUtil.getConnection();
 				PreparedStatement updateStatement = connection.prepareStatement(SqlConstants.UPDATE_EMPLOYEE_QUERY)) {
 
@@ -101,6 +111,8 @@ public class EmployeeDAO {
 			updateStatement.setInt(7, employee.getId());
 
 			return updateStatement.executeUpdate() > 0;
+		} catch (SQLException e) {
+			throw new EmployeeDaoException(MessageConstants.ERROR_DAO_UPDATE_EMPLOYEE_MESSAGE, e);
 		}
 	}
 }
