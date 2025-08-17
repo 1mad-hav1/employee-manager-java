@@ -27,7 +27,7 @@ public class MessageConstants {
     public static final String FAILED_CREATE_EMPLOYEE_MESSAGE = "Failed to create employee. No rows were inserted.";
     public static final String FAILED_FETCH_EMPLOYEE_BY_ID_MESSAGE = "Failed to fetch employee.";
     public static final String FAILED_FETCH_ALL_EMPLOYEES_MESSAGE = "Failed to fetch employees.";
-    public static final String FAILED_UPDATE_EMPLOYEE_MESSAGE = "Failed to update employee. No changes made.";
+    public static final String FAILED_UPDATE_EMPLOYEE_MESSAGE = "Failed to update employee.";
     public static final String FAILED_DELETE_EMPLOYEE_MESSAGE = "Failed to delete employee.";
 
     //Controller Prefix Messages
@@ -80,12 +80,52 @@ public class MessageConstants {
     //Database Error Messages
     public static final String ERROR_DATABASE_CONNECTION_MESSAGE = "Failed to establish connection with database";
     
-    //Error codes
-    public static final String DB_CONNECTION_ERROR_CODE = "DB-100";
-    public static final String DB_INSERT_ERROR_CODE = "DB-200";
-    public static final String DB_FETCH_ERROR_CODE = "DB-201";
-    public static final String DB_DELETE_ERROR_CODE = "DB-202";
-    public static final String DB_UPDATE_ERROR_CODE = "DB-203";
+    //Error codes messages
+    //DB errors
     
+    public static final String DB_CONNECTION_ERROR_MESSAGE = "Unable to connect to the server. Please try again later.";
     
+    public static final String DB_INSERT_ERROR_MESSAGE = "Failed to save employee data. Please try again.";
+    
+    public static final String DB_FETCH_ERROR_MESSAGE = "Failed to retrieve employee details. Please try again.";
+    
+    public static final String DB_FETCH_ALL_ERROR_MESSAGE = "Failed to retrieve employee details. Please try again.";
+    
+    public static final String DB_DELETE_ERROR_MESSAGE = "Failed to remove employee record. Please try again.";
+    
+    public static final String DB_UPDATE_ERROR_MESSAGE = "Failed to update employee details. Please try again.";
+
+    
+    //Validation / Input errors
+    
+    public static final String VAL_EMPTY_EMPLOYEE_OBJECT_ERROR_MESSAGE = "Employee object cannot be null.";
+
+    public static final String VAL_INVALID_EMPLOYEE_ID_ERROR_MESSAGE = "Employee ID is invalid or negative.";
+    
+    public static final String VAL_EXISTING_EMPLOYEE_ID_ERROR_MESSAGE = "Employee ID already exists.";
+    
+    public static final String VAL_INVALID_EMAIL_FORMAT_ERROR_MESSAGE = "Employee email format is invalid.";
+    
+    public static final String VAL_EXISTING_EMPLOYEE_EMAIL_ERROR_MESSAGE = "Employee email already exists.";
+    
+    public static final String VAL_INVALID_MOBILE_NUMBER_ERROR_MESSAGE = "Employee mobile number format is invalid.";
+    
+    public static final String VAL_EXISTING_EMPLOYEE_MOBILE_NUMBER_ERROR_MESSAGE = "Employee mobile number already exists.";
+
+    public static final String VAL_INVALID_JOINING_DATE_ERROR_MESSAGE = "Employee joining date entered is invalid.";
+    
+    public static final String VAL_EMPTY_FIRST_NAME_ERROR_MESSAGE = "Employee first name cannot be empty.";
+    
+    public static final String VAL_EMPTY_LAST_NAME_ERROR_MESSAGE = "Employee last name cannot be empty.";
+    
+    public static final String VAL_INVALID_ACTIVE_STATUS_ERROR_MESSAGE = "Employee active status is invalid.";
+    
+    //Employee related error codes
+    
+    public static final String EMPLOYEE_NOT_FOUND_ERROR_MESSAGE = "Employee does not exist.";
+    
+    public static final String EMPLOYEE_LIST_EMPTY_ERROR_MESSAGE = "No employee data found in the system.";
+    
+    public static final String EMPLOYEE_ALREADY_EXISTS_ERROR_MESSAGE = "Employee already exists.";
+
 }

@@ -1,8 +1,24 @@
-2025-08-17 20:16:03 [main] TRACE com.litmus7.employeemanager.controller.EmployeeController:162 - Entering getAllEmployees() - In Control layer
-2025-08-17 20:16:03 [main] TRACE com.litmus7.employeemanager.service.EmployeeService:57 - Entering getAllEmployees() - In Service layer
-2025-08-17 20:16:03 [main] TRACE com.litmus7.employeemanager.dao.EmployeeDAO:55 - Entering getAllEmployees() - In DAO layer
-2025-08-17 20:16:03 [main] TRACE com.litmus7.employeemanager.dao.EmployeeDAO:81 - Exiting getAllEmployees() - In DAO layer
-2025-08-17 20:16:03 [main] INFO  com.litmus7.employeemanager.service.EmployeeService:65 - Employee details fetched successfully
-2025-08-17 20:16:03 [main] TRACE com.litmus7.employeemanager.service.EmployeeService:71 - Exiting getAllEmployees() with 8 employees fetched - In Service layer
-2025-08-17 20:16:03 [main] INFO  com.litmus7.employeemanager.controller.EmployeeController:166 - Successfully fetched employee data
-2025-08-17 20:16:03 [main] TRACE com.litmus7.employeemanager.controller.EmployeeController:177 - Exiting getAllEmployees() - In Control layer
+2025-08-18 01:08:06 [main] ERROR com.litmus7.employeemanager.service.EmployeeService:28 - Error creating employee with id 100:  Id already exist
+2025-08-18 01:08:06 [main] ERROR com.litmus7.employeemanager.controller.EmployeeController:150 - Failed to create employee with id 100  Error code: VAL-102  Message: Employee ID already exists.
+2025-08-18 01:08:45 [main] ERROR com.litmus7.employeemanager.service.EmployeeService:28 - Error creating employee with id 250:  Id already exist
+2025-08-18 01:08:45 [main] ERROR com.litmus7.employeemanager.controller.EmployeeController:150 - Failed to create employee with id 250  Error code: VAL-102  Message: Employee ID already exists.
+2025-08-18 01:08:51 [main] INFO  com.litmus7.employeemanager.service.EmployeeService:65 - Employee details fetched successfully
+2025-08-18 01:08:51 [main] INFO  com.litmus7.employeemanager.controller.EmployeeController:166 - Successfully fetched employee data
+2025-08-18 01:09:19 [main] INFO  com.litmus7.employeemanager.service.EmployeeService:43 - Employee with id 150 created successfully
+2025-08-18 01:09:19 [main] INFO  com.litmus7.employeemanager.controller.EmployeeController:136 - Employee with id 150 created successfully
+2025-08-18 01:09:27 [main] INFO  com.litmus7.employeemanager.service.EmployeeService:81 - No employee data found in the database.
+2025-08-18 01:09:27 [main] ERROR com.litmus7.employeemanager.controller.EmployeeController:199 - Failed to fetch employee with id 140:  Error Code: EMP-100  Message: Employee does not exist.
+2025-08-18 01:09:49 [main] INFO  com.litmus7.employeemanager.service.EmployeeService:84 - Successfully fetched employee with id: 150
+2025-08-18 01:09:49 [main] INFO  com.litmus7.employeemanager.controller.EmployeeController:193 - Successfully fetched details of employee with id 150
+2025-08-18 01:10:13 [main] INFO  com.litmus7.employeemanager.service.EmployeeService:81 - No employee data found in the database.
+2025-08-18 01:10:13 [main] ERROR com.litmus7.employeemanager.controller.EmployeeController:199 - Failed to fetch employee with id 500:  Error Code: EMP-100  Message: Employee does not exist.
+2025-08-18 01:10:38 [main] INFO  com.litmus7.employeemanager.service.EmployeeService:84 - Successfully fetched employee with id: 150
+2025-08-18 01:10:38 [main] INFO  com.litmus7.employeemanager.controller.EmployeeController:193 - Successfully fetched details of employee with id 150
+2025-08-18 01:10:50 [main] INFO  com.litmus7.employeemanager.service.EmployeeService:139 - Updated Employee successfully with id {}: 150
+2025-08-18 01:10:50 [main] INFO  com.litmus7.employeemanager.controller.EmployeeController:249 - Successfully updated employee with id 150)
+2025-08-18 01:10:57 [main] ERROR com.litmus7.employeemanager.service.EmployeeService:99 - Error deleting employee with id Employee with the entered ID does not exist.: 
+2025-08-18 01:10:57 [main] ERROR com.litmus7.employeemanager.controller.EmployeeController:228 - Failed to delete employee with id 500  Error code: EMP-100  Message: Employee does not exist.
+2025-08-18 01:11:03 [main] INFO  com.litmus7.employeemanager.service.EmployeeService:65 - Employee details fetched successfully
+2025-08-18 01:11:03 [main] INFO  com.litmus7.employeemanager.controller.EmployeeController:166 - Successfully fetched employee data
+2025-08-18 01:11:15 [main] INFO  com.litmus7.employeemanager.service.EmployeeService:104 - Employee with id 251 deleted successfully
+2025-08-18 01:11:15 [main] INFO  com.litmus7.employeemanager.controller.EmployeeController:219 - Successfully deleted employee with id 251

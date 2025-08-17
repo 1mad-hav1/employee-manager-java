@@ -3,11 +3,11 @@ package com.litmus7.employeemanager.controller;
 import com.litmus7.employeemanager.constant.MessageConstants;
 import com.litmus7.employeemanager.dto.Employee;
 import com.litmus7.employeemanager.dto.Response;
-import com.litmus7.employeemanager.exception.EmployeeNotFoundException;
 import com.litmus7.employeemanager.exception.EmployeeServiceException;
 import com.litmus7.employeemanager.exception.EmployeeValidationException;
 import com.litmus7.employeemanager.exception.InvalidFileFormatException;
 import com.litmus7.employeemanager.service.EmployeeService;
+import com.litmus7.employeemanager.util.ErrorCodeUtil;
 import com.litmus7.employeemanager.util.TextFileUtil;
 import com.litmus7.employeemanager.util.ValidationUtil;
 
@@ -144,10 +144,10 @@ public class EmployeeController {
 			}
 		} catch (EmployeeValidationException e) {
 			response.setMessage(e.getMessage());
-			logger.error("Failed to create employee with id {}: {}", employee.getId(), response.getMessage());
+			logger.error("Failed to create employee with id {} due to validation error: {}", employee.getId(), e.getMessage());
 		} catch (EmployeeServiceException e) {
-			response.setMessage(MessageConstants.ERROR_CREATE_EMPLOYEE_PREFIX_MESSAGE + e.getMessage());
-			logger.error("Failed to create employee with id {}: {}", employee.getId(), response.getMessage());
+			response.setMessage(MessageConstants.ERROR_CREATE_EMPLOYEE_PREFIX_MESSAGE + ErrorCodeUtil.getErrorMessage(e.getErrorCode()));
+			logger.error("Failed to create employee with id {}  Error code: {}  Message: {}", employee.getId(), e.getErrorCode(), ErrorCodeUtil.getErrorMessage(e.getErrorCode()));
 		} finally {
 			logger.trace("Exiting createEmployee() - In Control layer");
 		}
@@ -168,11 +168,8 @@ public class EmployeeController {
 			response.setSuccess(true);
 
 		} catch (EmployeeServiceException e) {
-			response.setMessage(MessageConstants.ERROR_FETCH_ALL_EMPLOYEE_PREFIX_MESSAGE + e.getMessage());
-			logger.error("Failed to fetch employees: {}", response.getMessage());
-		} catch (EmployeeNotFoundException e) {
-			response.setMessage(e.getMessage());
-			logger.error("Failed to fetch employees: {}", response.getMessage());
+			response.setMessage(MessageConstants.ERROR_FETCH_ALL_EMPLOYEE_PREFIX_MESSAGE + ErrorCodeUtil.getErrorMessage(e.getErrorCode()));
+			logger.error("Failed to fetch employees: {}", ErrorCodeUtil.getErrorMessage(e.getErrorCode()));
 		} finally {
 			logger.trace("Exiting getAllEmployees() - In Control layer");
 		}
@@ -198,11 +195,8 @@ public class EmployeeController {
 			response.setSuccess(true);
 
 		} catch (EmployeeServiceException e) {
-			response.setMessage(MessageConstants.ERROR_FETCH_EMPLOYEE_BY_ID_PREFIX_MESSAGE + e.getMessage());
-			logger.error("Failed to fetch employee with id {}: {}", id, response.getMessage());
-		} catch (EmployeeNotFoundException e) {
-			response.setMessage(e.getMessage());
-			logger.error("Failed to fetch employee with id {}: {}", id, response.getMessage());
+			response.setMessage(MessageConstants.ERROR_FETCH_EMPLOYEE_BY_ID_PREFIX_MESSAGE + ErrorCodeUtil.getErrorMessage(e.getErrorCode()));
+			logger.error("Failed to fetch employee with id {}:  Error Code: {}  Message: {}", id, e.getErrorCode(), ErrorCodeUtil.getErrorMessage(e.getErrorCode()));
 		} finally {
 			logger.trace("Exiting getEmployeeById({}) - In Control layer", id);
 		}
@@ -230,8 +224,8 @@ public class EmployeeController {
 				response.setMessage(MessageConstants.FAILED_DELETE_EMPLOYEE_MESSAGE);
 			}
 		} catch (EmployeeServiceException e) {
-			logger.error("Failed to delete employee with id {}: {}", id, response.getMessage());
-			response.setMessage(MessageConstants.ERROR_DELETE_EMPLOYEE_PREFIX_MESSAGE + e.getMessage());
+			response.setMessage(MessageConstants.ERROR_DELETE_EMPLOYEE_PREFIX_MESSAGE + ErrorCodeUtil.getErrorMessage(e.getErrorCode()));
+			logger.error("Failed to delete employee with id {}  Error code: {}  Message: {}", id,e.getErrorCode(), ErrorCodeUtil.getErrorMessage(e.getErrorCode()));
 		} finally {
 			logger.trace("Exiting deleteEmployee({}) - In Control layer", id);
 		}
@@ -263,10 +257,10 @@ public class EmployeeController {
 			}
 		} catch (EmployeeValidationException e) {
 			response.setMessage(e.getMessage());
-			logger.error("Failed to update employee with id {}: {}", employee.getId(), response.getMessage());
+			logger.error("Failed to update employee with id {} due to validation error: {}", employee.getId(), e.getMessage());
 		} catch (EmployeeServiceException e) {
 			response.setMessage(MessageConstants.ERROR_UPDATE_EMPLOYEE_PREFIX_MESSAGE + e.getMessage());
-			logger.error("Failed to update employee with id {}: {}", employee.getId(), response.getMessage());
+			logger.error("Failed to update employee with id {}:  Error Code: {}  Message: {}", employee.getId(), e.getErrorCode(), ErrorCodeUtil.getErrorMessage(e.getErrorCode()));
 		} finally {
 			logger.trace("Exiting updateEmployee() for employee with id {} - In Control layer", employee.getId());
 		}

@@ -11,6 +11,7 @@ import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.litmus7.employeemanager.constant.ErrorCodeConstants;
 import com.litmus7.employeemanager.exception.DatabaseException;
 
 
@@ -43,14 +44,14 @@ public class DatabaseUtil {
 		
 		if (url == null || user == null || password == null) {
 			logger.error("Database configuration is missing required values");
-            throw new DatabaseException("Database configuration is missing required values");
+            throw new DatabaseException("Database configuration is missing required values", ErrorCodeConstants.DB_CONNECTION_ERROR_CODE);
         }
 		
         try {
 			return DriverManager.getConnection(url, user, password);
 		} catch (SQLException e) {
 			logger.error("Failed to establish database connection", e);
-			throw new DatabaseException("Failed to establish database connection", e);
+			throw new DatabaseException("Failed to establish database connection", e, ErrorCodeConstants.DB_CONNECTION_ERROR_CODE);
 		}
         
 

@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.litmus7.employeemanager.constant.SqlConstants;
+import com.litmus7.employeemanager.constant.ErrorCodeConstants;
 import com.litmus7.employeemanager.constant.MessageConstants;
 import com.litmus7.employeemanager.dto.Employee;
 import com.litmus7.employeemanager.exception.DatabaseException;
@@ -41,11 +42,11 @@ public class EmployeeDAO {
 		} catch (DatabaseException databaseException) {
 			logger.error("Error creating employee with id {}: ", employee.getId(),
 					MessageConstants.ERROR_DATABASE_CONNECTION_MESSAGE, databaseException);
-			throw new EmployeeDaoException(MessageConstants.ERROR_DATABASE_CONNECTION_MESSAGE, databaseException);
+			throw new EmployeeDaoException(MessageConstants.ERROR_DATABASE_CONNECTION_MESSAGE, databaseException, databaseException.getErrorCode());
 		} catch (SQLException sqlException) {
 			logger.error("Error creating employee with id {}: {}", employee.getId(),
 					MessageConstants.ERROR_DAO_CREATE_EMPLOYEE_MESSAGE, sqlException);
-			throw new EmployeeDaoException(MessageConstants.ERROR_DAO_CREATE_EMPLOYEE_MESSAGE, sqlException);
+			throw new EmployeeDaoException(MessageConstants.ERROR_DAO_CREATE_EMPLOYEE_MESSAGE, sqlException, ErrorCodeConstants.DB_INSERT_ERROR_CODE);
 		}
 		logger.trace("Exiting from createEmployee() for employee {} with success = {}", employee.getId(), success);
 		return success;
@@ -72,10 +73,10 @@ public class EmployeeDAO {
 
 		} catch (DatabaseException databaseException) {
 			logger.error("Error fetching all employees: {}", MessageConstants.ERROR_DATABASE_CONNECTION_MESSAGE, databaseException);
-			throw new EmployeeDaoException(MessageConstants.ERROR_DATABASE_CONNECTION_MESSAGE, databaseException);
+			throw new EmployeeDaoException(MessageConstants.ERROR_DATABASE_CONNECTION_MESSAGE, databaseException, databaseException.getErrorCode());
 		} catch (SQLException sqlException) {
 			logger.error("Error fetching employees: ", sqlException);
-			throw new EmployeeDaoException(MessageConstants.ERROR_DAO_GET_ALL_EMPLOYEE_MESSAGE, sqlException);
+			throw new EmployeeDaoException(MessageConstants.ERROR_DAO_GET_ALL_EMPLOYEE_MESSAGE, sqlException, ErrorCodeConstants.DB_FETCH_ALL_ERROR_CODE);
 		}
 
 		logger.trace("Exiting getAllEmployees() - In DAO layer");
@@ -105,10 +106,10 @@ public class EmployeeDAO {
 		} catch (DatabaseException databaseException) {
 			logger.error("Error fetching employee with id {}: {}", id,
 					MessageConstants.ERROR_DATABASE_CONNECTION_MESSAGE, databaseException);
-			throw new EmployeeDaoException(MessageConstants.ERROR_DATABASE_CONNECTION_MESSAGE, databaseException);
+			throw new EmployeeDaoException(MessageConstants.ERROR_DATABASE_CONNECTION_MESSAGE, databaseException, databaseException.getErrorCode());
 		} catch (SQLException sqlException) {
 			logger.error("Error fetching employee with id {}:", id, sqlException);
-			throw new EmployeeDaoException(MessageConstants.ERROR_DAO_GET_EMPLOYEE_BY_ID_MESSAGE, sqlException);
+			throw new EmployeeDaoException(MessageConstants.ERROR_DAO_GET_EMPLOYEE_BY_ID_MESSAGE, sqlException, ErrorCodeConstants.DB_FETCH_ERROR_CODE);
 		}
 
 		logger.trace("Exiting getEmployeeById({}) - In DAO layer", id);
@@ -128,10 +129,10 @@ public class EmployeeDAO {
 		} catch (DatabaseException databaseException) {
 			logger.error("Error deleting employee with id {}: {}", id,
 					MessageConstants.ERROR_DATABASE_CONNECTION_MESSAGE, databaseException);
-			throw new EmployeeDaoException(MessageConstants.ERROR_DATABASE_CONNECTION_MESSAGE, databaseException);
+			throw new EmployeeDaoException(MessageConstants.ERROR_DATABASE_CONNECTION_MESSAGE, databaseException, databaseException.getErrorCode());
 		} catch (SQLException sqlException) {
 			logger.error("Error deleting employee with id {}: ", id, sqlException);
-			throw new EmployeeDaoException(MessageConstants.ERROR_DAO_DELETE_EMPLOYEE_MESSAGE, sqlException);
+			throw new EmployeeDaoException(MessageConstants.ERROR_DAO_DELETE_EMPLOYEE_MESSAGE, sqlException, ErrorCodeConstants.DB_DELETE_ERROR_CODE);
 		}
 		logger.trace("Exiting deleteEmployee({}) from DAO layer with success = {}", id, success);
 		return success;
@@ -155,10 +156,10 @@ public class EmployeeDAO {
 		} catch (DatabaseException databaseException) {
 			logger.error("Error updating employee with id {}: {}", employee.getId(),
 					MessageConstants.ERROR_DATABASE_CONNECTION_MESSAGE, databaseException);
-			throw new EmployeeDaoException(MessageConstants.ERROR_DATABASE_CONNECTION_MESSAGE, databaseException);
+			throw new EmployeeDaoException(MessageConstants.ERROR_DATABASE_CONNECTION_MESSAGE, databaseException, databaseException.getErrorCode());
 		} catch (SQLException sqlException) {
 			logger.error("Failed to update employee with id {}: " + employee.getId(), sqlException);
-			throw new EmployeeDaoException(MessageConstants.ERROR_DAO_UPDATE_EMPLOYEE_MESSAGE, sqlException);
+			throw new EmployeeDaoException(MessageConstants.ERROR_DAO_UPDATE_EMPLOYEE_MESSAGE, sqlException, ErrorCodeConstants.DB_UPDATE_ERROR_CODE);
 		}
 		logger.trace("Exiting updateEmployee() for employee with id {} from DAO layer with success = {}",
 				employee.getId(), success);
