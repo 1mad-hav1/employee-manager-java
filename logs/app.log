@@ -1,0 +1,8 @@
+2025-08-17 20:16:03 [main] TRACE com.litmus7.employeemanager.controller.EmployeeController:162 - Entering getAllEmployees() - In Control layer
+2025-08-17 20:16:03 [main] TRACE com.litmus7.employeemanager.service.EmployeeService:57 - Entering getAllEmployees() - In Service layer
+2025-08-17 20:16:03 [main] TRACE com.litmus7.employeemanager.dao.EmployeeDAO:55 - Entering getAllEmployees() - In DAO layer
+2025-08-17 20:16:03 [main] TRACE com.litmus7.employeemanager.dao.EmployeeDAO:81 - Exiting getAllEmployees() - In DAO layer
+2025-08-17 20:16:03 [main] INFO  com.litmus7.employeemanager.service.EmployeeService:65 - Employee details fetched successfully
+2025-08-17 20:16:03 [main] TRACE com.litmus7.employeemanager.service.EmployeeService:71 - Exiting getAllEmployees() with 8 employees fetched - In Service layer
+2025-08-17 20:16:03 [main] INFO  com.litmus7.employeemanager.controller.EmployeeController:166 - Successfully fetched employee data
+2025-08-17 20:16:03 [main] TRACE com.litmus7.employeemanager.controller.EmployeeController:177 - Exiting getAllEmployees() - In Control layer

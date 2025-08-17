@@ -16,9 +16,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class EmployeeController {
 
-	private EmployeeService employeeService = new EmployeeService();
+	private static final Logger logger = LogManager.getLogger(EmployeeController.class);
+	private static final EmployeeService employeeService = new EmployeeService();
 
 	public Response<List<Employee>> readEmployeeDataFromFile(String inputFileName, String expectedExtension,
 			String delimiter) {
@@ -114,30 +118,38 @@ public class EmployeeController {
 
 //-----------------------  DB  ----------------------------------
 
-	public Response<Boolean> createEmployee(Employee employee) {
+	public Response<Void> createEmployee(Employee employee) {
 
-		Response<Boolean> response = new Response<Boolean>(false, null, "");
+		Response<Void> response = new Response<>(false, "");
 
 		if (employee == null) {
+			logger.warn("Employee object received is null");
 			response.setMessage(MessageConstants.EMPTY_EMPLOYEE_MESSAGE);
 			return response;
 		}
-
+		
+		logger.trace("Entering createEmployee() for employee with id {} - In Control layer", employee.getId());
 		try {
 			if (ValidationUtil.isValidEmployee(employee)) {
 
 				if (employeeService.createEmployee(employee)) {
-
+					logger.info("Employee with id {} created successfully", employee.getId());
 					response.setSuccess(true);
 					response.setMessage(MessageConstants.SUCCESS_CREATE_EMPLOYEE_MESSAGE);
 
-				} else
+				} else {
+					logger.info("Failed to create employee with id {}", employee.getId());
 					response.setMessage(MessageConstants.FAILED_CREATE_EMPLOYEE_MESSAGE);
+				}
 			}
 		} catch (EmployeeValidationException e) {
 			response.setMessage(e.getMessage());
+			logger.error("Failed to create employee with id {}: {}", employee.getId(), response.getMessage());
 		} catch (EmployeeServiceException e) {
 			response.setMessage(MessageConstants.ERROR_CREATE_EMPLOYEE_PREFIX_MESSAGE + e.getMessage());
+			logger.error("Failed to create employee with id {}: {}", employee.getId(), response.getMessage());
+		} finally {
+			logger.trace("Exiting createEmployee() - In Control layer");
 		}
 
 		return response;
@@ -147,16 +159,22 @@ public class EmployeeController {
 	public Response<List<Employee>> getAllEmployees() {
 
 		Response<List<Employee>> response = new Response<List<Employee>>(false, null, "");
+		logger.trace("Entering getAllEmployees() - In Control layer");
 
 		try {
-
 			response.setData(employeeService.getAllEmployees());
+			logger.info("Successfully fetched employee data");
+			response.setMessage(MessageConstants.SUCCESS_FETCH_ALL_EMPLOYEES_MESSAGE);
 			response.setSuccess(true);
 
 		} catch (EmployeeServiceException e) {
 			response.setMessage(MessageConstants.ERROR_FETCH_ALL_EMPLOYEE_PREFIX_MESSAGE + e.getMessage());
+			logger.error("Failed to fetch employees: {}", response.getMessage());
 		} catch (EmployeeNotFoundException e) {
 			response.setMessage(e.getMessage());
+			logger.error("Failed to fetch employees: {}", response.getMessage());
+		} finally {
+			logger.trace("Exiting getAllEmployees() - In Control layer");
 		}
 
 		return response;
@@ -165,72 +183,92 @@ public class EmployeeController {
 	public Response<Employee> getEmployeeById(int id) {
 
 		Response<Employee> response = new Response<Employee>(false, null, "");
+		logger.trace("Entering getEmployeeById({}) - In Control layer", id);
 
 		if (id <= 0) {
+			logger.warn("Invalid id value entered");
 			response.setMessage(MessageConstants.INVALID_ID_MESSAGE);
 			return response;
 		}
 
 		try {
-
 			response.setData(employeeService.getEmployeeById(id));
+			logger.info("Successfully fetched details of employee with id {}", id);
+			response.setMessage(MessageConstants.SUCCESS_FETCH_EMPLOYEE_MESSAGE);
 			response.setSuccess(true);
 
 		} catch (EmployeeServiceException e) {
 			response.setMessage(MessageConstants.ERROR_FETCH_EMPLOYEE_BY_ID_PREFIX_MESSAGE + e.getMessage());
+			logger.error("Failed to fetch employee with id {}: {}", id, response.getMessage());
 		} catch (EmployeeNotFoundException e) {
 			response.setMessage(e.getMessage());
+			logger.error("Failed to fetch employee with id {}: {}", id, response.getMessage());
+		} finally {
+			logger.trace("Exiting getEmployeeById({}) - In Control layer", id);
 		}
-
 		return response;
 	}
 
-	public Response<Boolean> deleteEmployee(int id) {
+	public Response<Void> deleteEmployee(int id) {
 
-		Response<Boolean> response = new Response<Boolean>(false, null, "");
-
+		Response<Void> response = new Response<>(false, "");
+		logger.trace("Entering deleteEmployee({}) - In Control layer", id);
+		
 		if (id <= 0) {
+			logger.warn("Invalid id value entered");
 			response.setMessage(MessageConstants.INVALID_ID_MESSAGE);
 			return response;
 		}
 
 		try {
 			if (employeeService.deleteEmployeeById(id)) {
-
+				logger.info("Successfully deleted employee with id {}", id);
 				response.setSuccess(true);
 				response.setMessage(MessageConstants.SUCCESS_DELETE_EMPLOYEE_BY_ID_MESSAGE);
-			} else
+			} else {
+				logger.info("Failed to delete employee with id {}", id);
 				response.setMessage(MessageConstants.FAILED_DELETE_EMPLOYEE_MESSAGE);
+			}
 		} catch (EmployeeServiceException e) {
+			logger.error("Failed to delete employee with id {}: {}", id, response.getMessage());
 			response.setMessage(MessageConstants.ERROR_DELETE_EMPLOYEE_PREFIX_MESSAGE + e.getMessage());
+		} finally {
+			logger.trace("Exiting deleteEmployee({}) - In Control layer", id);
 		}
 		return response;
 	}
 
-	public Response<Boolean> updateEmployee(Employee employee) {
+	public Response<Void> updateEmployee(Employee employee) {
 
-		Response<Boolean> response = new Response<Boolean>(false, null, "");
-
+		Response<Void> response = new Response<>(false, "");
+		
 		if (employee == null) {
+			logger.warn("Employee object received is null");
 			response.setMessage(MessageConstants.EMPTY_EMPLOYEE_MESSAGE);
 			return response;
 		}
-
+		logger.trace("Entering updateEmployee() for employee with id {} - In Control layer", employee.getId());
 		try {
 			if (ValidationUtil.isValidEmployee(employee)) {
 
 				if (employeeService.updateEmployee(employee)) {
-
+					logger.info("Successfully updated employee with id {})", employee.getId());
 					response.setSuccess(true);
 					response.setMessage(MessageConstants.SUCCESS_UPDATE_EMPLOYEE_MESSAGE);
 
-				} else
+				} else {
+					logger.info("Failed to update employee with id {})", employee.getId());
 					response.setMessage(MessageConstants.FAILED_UPDATE_EMPLOYEE_MESSAGE);
+				}
 			}
 		} catch (EmployeeValidationException e) {
 			response.setMessage(e.getMessage());
+			logger.error("Failed to update employee with id {}: {}", employee.getId(), response.getMessage());
 		} catch (EmployeeServiceException e) {
 			response.setMessage(MessageConstants.ERROR_UPDATE_EMPLOYEE_PREFIX_MESSAGE + e.getMessage());
+			logger.error("Failed to update employee with id {}: {}", employee.getId(), response.getMessage());
+		} finally {
+			logger.trace("Exiting updateEmployee() for employee with id {} - In Control layer", employee.getId());
 		}
 
 		return response;

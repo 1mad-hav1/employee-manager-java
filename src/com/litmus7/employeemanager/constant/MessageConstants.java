@@ -76,5 +76,16 @@ public class MessageConstants {
     public static final String SUCCESS_FETCH_EMPLOYEES_FILE_MESSAGE = "Successfully retrieved Employee details.";
     public static final String SUCCESS_WRITE_EMPLOYEES_CSV_MESSAGE = "Successfully written Employee details to csv file.";
     public static final String SUCCESS_WRITE_EMPLOYEE_CSV_MESSAGE = "Successfully written Employee details to csv file.";
-
+    
+    //Database Error Messages
+    public static final String ERROR_DATABASE_CONNECTION_MESSAGE = "Failed to establish connection with database";
+    
+    //Error codes
+    public static final String DB_CONNECTION_ERROR_CODE = "DB-100";
+    public static final String DB_INSERT_ERROR_CODE = "DB-200";
+    public static final String DB_FETCH_ERROR_CODE = "DB-201";
+    public static final String DB_DELETE_ERROR_CODE = "DB-202";
+    public static final String DB_UPDATE_ERROR_CODE = "DB-203";
+    
+    
 }

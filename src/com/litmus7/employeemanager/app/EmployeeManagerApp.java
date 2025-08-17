@@ -185,7 +185,7 @@ public class EmployeeManagerApp {
 							Employee employee = new Employee(id, firstName, lastName, email, mobileNumber, joiningDate,
 									status);
 
-							Response<Boolean> response = employeeController.createEmployee(employee);
+							Response<Void> response = employeeController.createEmployee(employee);
 							System.out.println(response.getMessage());
 						} catch (NumberFormatException e) {
 							System.out.println("Enter valid number.\n");
@@ -269,7 +269,7 @@ public class EmployeeManagerApp {
 								employee.setStatus(
 										status.trim().isEmpty() ? employee.getStatus() : Boolean.parseBoolean(status));
 
-								Response<Boolean> response = employeeController.updateEmployee(employee);
+								Response<Void> response = employeeController.updateEmployee(employee);
 								System.out.println(response.getMessage());
 							} catch (DateTimeParseException e) {
 								System.out.println("Enter date in proper format(yyyy-mm-dd format)");
@@ -278,7 +278,7 @@ public class EmployeeManagerApp {
 					} else if (choiceDb == 5) {
 						System.out.println("Enter id:");
 						int id = Integer.parseInt(br.readLine());
-						Response<Boolean> response = employeeController.deleteEmployee(id);
+						Response<Void> response = employeeController.deleteEmployee(id);
 						System.out.println(response.getMessage());
 					} else if (choiceDb != 6)
 						System.out.println("\nEnter a valid choice");

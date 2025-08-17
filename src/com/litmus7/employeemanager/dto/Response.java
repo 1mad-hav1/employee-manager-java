@@ -11,6 +11,11 @@ public class Response<T> {
 		this.data = data;
 		this.message = message;
 	}
+
+	public Response(boolean success, String message) {
+	    this(success, null, message);
+	}
+
 	
 	public Response() {
 	}

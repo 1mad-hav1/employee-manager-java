@@ -8,33 +8,50 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.litmus7.employeemanager.exception.DatabaseException;
+
+
 public class DatabaseUtil {
+	
+	private static final Logger logger = LogManager.getLogger(DatabaseUtil.class);
+	
 	private static final Properties props = new Properties();
     private static String url;
     private static String user;
     private static String password;
     
+    private static final String propertiesFileName = "db.properties";
+    
     static {
-        try (FileInputStream fis = new FileInputStream("db.properties")) {
+        try (FileInputStream fis = new FileInputStream(propertiesFileName)) {
             props.load(fis);
             url = props.getProperty("url");
             user = props.getProperty("user");
             password = props.getProperty("password");
         } catch (FileNotFoundException e) {
-            System.out.println("[ERROR] db.properties not found");
+        	logger.error("Database Configuration file {} was not found", propertiesFileName);
         } catch (IOException e) {
-            System.out.println("[ERROR] Failed to load db.properties due to an I/O error");
+        	logger.error("Failed to load Database Configuration values");
         }
     }
 
 	
-	public static Connection getConnection() throws SQLException{
+	public static Connection getConnection() throws DatabaseException{
 		
 		if (url == null || user == null || password == null) {
-            throw new SQLException("Database configuration not loaded properly.");
+			logger.error("Database configuration is missing required values");
+            throw new DatabaseException("Database configuration is missing required values");
         }
 		
-        return DriverManager.getConnection(url, user, password);
+        try {
+			return DriverManager.getConnection(url, user, password);
+		} catch (SQLException e) {
+			logger.error("Failed to establish database connection", e);
+			throw new DatabaseException("Failed to establish database connection", e);
+		}
         
 
 //      try (InputStream input = getClass().getClassLoader().getResourceAsStream("db.properties")) {
