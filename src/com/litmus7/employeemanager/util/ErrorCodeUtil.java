@@ -10,6 +10,8 @@ public class ErrorCodeUtil {
 	private static final Map<String, String> ERROR_MESSAGES = new HashMap<>();
 
 	static {
+		ERROR_MESSAGES.put(ErrorCodeConstants.UNEXPECTED_ERROR_CODE, MessageConstants.UNEXPECTED_ERROR_MESSAGE);
+		
 		// Database errors
 		ERROR_MESSAGES.put(ErrorCodeConstants.DB_CONNECTION_ERROR_CODE, MessageConstants.DB_CONNECTION_ERROR_MESSAGE);
 		ERROR_MESSAGES.put(ErrorCodeConstants.DB_INSERT_ERROR_CODE, MessageConstants.DB_INSERT_ERROR_MESSAGE);

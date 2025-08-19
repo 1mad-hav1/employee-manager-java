@@ -81,6 +81,8 @@ public class MessageConstants {
     public static final String ERROR_DATABASE_CONNECTION_MESSAGE = "Failed to establish connection with database";
     
     //Error codes messages
+    
+    public static final String UNEXPECTED_ERROR_MESSAGE = "An Unexpected error occured. Please try again.";
     //DB errors
     
     public static final String DB_CONNECTION_ERROR_MESSAGE = "Unable to connect to the server. Please try again later.";

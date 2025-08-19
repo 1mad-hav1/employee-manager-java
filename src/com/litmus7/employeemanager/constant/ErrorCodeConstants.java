@@ -1,6 +1,8 @@
 package com.litmus7.employeemanager.constant;
 
 public class ErrorCodeConstants {
+	public static final String UNEXPECTED_ERROR_CODE = "ERR-UNEXPECTED";
+	
 	//Database
 	public static final String DB_CONNECTION_ERROR_CODE = "DB-100";
     public static final String DB_INSERT_ERROR_CODE = "DB-200";
